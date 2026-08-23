@@ -31,6 +31,7 @@
     "test:watch": "vitest",
     "check": "npm run check:lock-consistency && npm run lint && npm run typecheck && npm run test",
     "check:lock-consistency": "node scripts/check-lock-consistency.mjs",
+    "check:startos-submission": "bash tests/startos/test-community-registry.sh",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

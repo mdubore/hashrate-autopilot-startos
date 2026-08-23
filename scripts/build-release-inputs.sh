@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-app_version="$(sed -n "s/.*appVersion = '\([^']*\)'.*/\1/p" startos/utils.ts | head -1)"
+app_version="$(sed -n "s/^export const appVersion = '\([^']*\)';/\1/p" startos/utils.ts | head -1)"
 if [ -z "$app_version" ]; then
     echo "Could not parse appVersion from startos/utils.ts" >&2
     exit 1
