@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-23
+
+### `[Release]` v1.18.2
+
+Protection-and-honesty patch. Failed bid actions show the marketplace's own error and alert after repeated failures (#372); a churn breaker, a blacklist-aware hold with countdown, and node-down bid protection guard the account against the failure chain that produced a real 24h marketplace blacklist (#373); hold and failure periods band the charts and Timeline (#374); unpaid-history gaps from the v1.18.1 recovery are interpolated between real samples (#375); and long-lived conditions no longer fake a "Recovered" at six hours (#376). The README now carries the maintenance-mode project notice linking discussion #377. Safe to upgrade from any 1.17.x or 1.18.x release; no new settings.
+
 ## 2026-08-22
 
 ### `[Fix]` Long-lived holds no longer fake a "Recovered" after six hours (#376)

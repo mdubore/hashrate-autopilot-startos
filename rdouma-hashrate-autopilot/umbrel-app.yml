@@ -7,7 +7,7 @@ manifestVersion: 1
 id: rdouma-hashrate-autopilot
 category: bitcoin
 name: Hashrate Autopilot
-version: "1.18.1"
+version: "1.18.2"
 tagline: Autopilot for renting hashrate to mine on Ocean Mining
 icon: https://raw.githubusercontent.com/rdouma/hashrate-autopilot/main/assets/icon-512.png
 # Umbrel renders description literally - no YAML folding of soft
@@ -53,6 +53,18 @@ defaultPassword: ""
 submitter: Remco Douma
 submission: https://github.com/rdouma/hashrate-autopilot
 releaseNotes: |
+  v1.18.2 - the autopilot now protects your account from marketplace penalties, and the dashboard always tells you why bidding stopped.
+
+  FIXED
+  - When a bid action fails, the dashboard now shows the marketplace's own error message next to the FAILED badge instead of leaving you guessing, and an alert fires after repeated failures with the reason in the Telegram message.
+  - New protections against the failure chain that got one operator's pool target temporarily blacklisted by the marketplace: the autopilot stops re-creating bids after three create/cancel cycles that delivered nothing (resume manually once the cause is fixed), a marketplace blacklist is detected and waited out automatically with a countdown instead of a failing attempt every minute, and when your Bitcoin node goes unresponsive the autopilot cancels active bids and holds new ones - rented hashrate never burns against a pool that cannot produce work.
+  - Periods where bidding was held or kept failing now draw a hatched band across the charts and appear on the Timeline, so a flat stretch is never mistaken for a quiet market.
+  - Long-lived conditions no longer falsely show "Recovered" after six hours - the band now runs until the condition genuinely ends.
+  - Gaps in the unpaid-earnings history (left by the v1.18.1 recovery) are filled by interpolating strictly between adjacent real readings - never across a payout, never on the BIP110 chain.
+
+  PROJECT NOTE
+  - The README now carries a project-status notice: the project is in maintenance mode in its current SHA-256 form. Everything keeps working and this update is safe from any 1.17.x or 1.18.x release, but read the notice before planning around future feature work.
+
   v1.18.1 - unpaid-earnings history protected and restored.
 
   FIXED
