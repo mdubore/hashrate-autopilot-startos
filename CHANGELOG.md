@@ -1,6 +1,46 @@
 # Changelog
 
+## 2026-08-23
+
+### `[Release]` v1.18.2
+
+Protection-and-honesty patch. Failed bid actions show the marketplace's own error and alert after repeated failures (#372); a churn breaker, a blacklist-aware hold with countdown, and node-down bid protection guard the account against the failure chain that produced a real 24h marketplace blacklist (#373); hold and failure periods band the charts and Timeline (#374); unpaid-history gaps from the v1.18.1 recovery are interpolated between real samples (#375); and long-lived conditions no longer fake a "Recovered" at six hours (#376). The README now carries the maintenance-mode project notice linking discussion #377. Safe to upgrade from any 1.17.x or 1.18.x release; no new settings.
+
+## 2026-08-22
+
+### `[Fix]` Long-lived holds no longer fake a "Recovered" after six hours (#376)
+
+The chart band and Timeline span for an ongoing condition stopped after six hours and claimed it had recovered - contradicting the live hold. The span layer presumed any unrecovered alert older than six hours was a stale orphan from a crash; a 24-hour marketplace blacklist is the first condition that legitimately stays open longer. An unrecovered alert that is the latest of its kind now stays open indefinitely (bounded only at seven days for pathological orphans), and any span end that is not a real recovery is labeled "Ended (estimated)" instead of "Recovered".
+
+### `[Fix]` Unpaid-history holes filled between real samples (#375)
+
+The #369 restore recovered the wiped era only at ticks the decision log still covered, leaving a sparse dashed unpaid line with holes mid-July through mid-August. A boot-time pass now fills those holes by linear interpolation strictly between adjacent real samples - only when the bracket is at most 6 hours, contains no payout, and is monotonically non-decreasing (a drop means a payout happened in the gap; those stay honest holes). Bounded gap-filling between two real measurements, not reconstruction; BIP110-chain ticks are never touched, and interpolated segments can never be misread as payouts by the deduced-payout scanner.
+
+### `[UI]` Hold and failure periods now band the charts (#374)
+
+Periods where bidding was held after bid churn, where the marketplace had blacklisted your pool, or where bid actions kept failing now draw a hatched band across the Status charts, with a hover tooltip naming the condition and how long it lasted. They also appear as span rows on the Timeline with their own filter chip, so you can see at a glance which flat stretch of the price line was a hold rather than a quiet market.
+
+## 2026-08-21
+
+### `[Fix]` Churn breaker, blacklist-aware hold, and node-health bid protection (#373)
+
+Three protections born from the Aug 21 incident where a hung Bitcoin node caused hours of create/cancel churn and a 24h marketplace blacklist of the pool target. The autopilot now stops creating after 3 consecutive bids that were created and market-canceled without delivering hashrate, holding until you press Resume (manual by design - no automated retry can re-trip the marketplace's anti-abuse). A marketplace blacklist rejection is parsed for its expiry: one alert with the end time, a hold instead of a failing tick per minute, and automatic resume after it passes. And when your Bitcoin node has been unreachable for 30 minutes, the destination pool is treated as work-less with full parity to the Datum-down protection - active bids are canceled and no new ones are placed, because DATUM cannot build templates without its node. Two new alert classes (bidding held / pool blacklisted) with Telegram notifications in all languages.
+
+### `[Fix]` Failed bid actions now say why (#372)
+
+When the marketplace rejected a bid action, the Status page showed a bare orange FAILED badge and nothing else - the actual reason (for example "Target not allowed (blacklisted until ...)") was recorded but only reachable through the raw decisions API. The failed row now prints the marketplace's own error message underneath it, shortened to fit, with the full text on hover.
+
+A new "Bid actions keep failing" alert also rings Telegram when three ticks in a row have every attempted bid action rejected, carrying the latest error text in the message, and pairs a recovery notice as soon as one action goes through again. It is on by default alongside the other important alerts and can be switched off on the Notifications tab.
+
 ## 2026-08-20
+
+### `[Release]` v1.18.1
+
+Emergency patch for the unpaid-history wipe (#369). The boot-time cleanup that could destroy genuine unpaid-earnings history when the balance ran above 1.5M sats is fenced to the spring-2026 data problem it was written for; a startup self-heal restores wiped values from the decision log automatically; and operators with an old database copy can merge the remainder back via an `ocean-unpaid-import.json` drop-in. Recovery runs automatically after the update. Affects every release from v1.10.0 through v1.18.0.
+
+### `[Fix]` Unpaid-earnings history no longer wiped when the balance runs high (#369)
+
+A boot-time cleanup (shipped v1.10.0 to revert an old bad reconstruction of historical unpaid values) assumed no real unpaid balance could ever exceed 1.5M sat. With larger hashrate targets and Ocean's post-split payout cadence occasionally running long, a genuine balance crossed that threshold - and the next daemon restart wiped the entire unpaid-earnings history up to that point, with no way back from the P&L rebuild or hard reset. The cleanup is now bounded to the spring-2026 contamination era it was written for, so a high balance can never trigger it again, and a new boot-time self-heal restores previously wiped values from the per-tick decision log (recent history recovers completely; older history recovers at every tick that had bid activity). Operators holding an old copy of their database can recover the rest: export `[[tick_at_ms, unpaid_sat], ...]` pairs to an `ocean-unpaid-import.json` file next to `state.db` and the next boot merges them into the wiped rows exactly once - existing values are never overwritten.
 
 ### `[Release]` v1.18.0
 

@@ -732,6 +732,18 @@ msgstr "Bid {0} is {1} - waiting for it to become active."
 msgid "Bid above target - Braiins price-decrease cooldown active."
 msgstr "Bid above target - Braiins price-decrease cooldown active."
 
+#: src/lib/alertConditions.ts
+msgid "bid actions failing"
+msgstr "bid actions failing"
+
+#: src/pages/Config.tsx
+msgid "Bid actions keep failing"
+msgstr "Bid actions keep failing"
+
+#: src/lib/alertConditions.ts
+msgid "bid actions working again"
+msgstr "bid actions working again"
+
 #: src/components/TilesBar.tsx
 msgid "bid coverage"
 msgstr "bid coverage"
@@ -798,6 +810,26 @@ msgstr "Bid-event markers (CREATE / EDIT_PRICE / EDIT_SPEED / CANCEL) on the pri
 #: src/components/StaleUrlBanner.tsx
 msgid "Bid:"
 msgstr "Bid:"
+
+#: src/lib/alertConditions.ts
+msgid "bidding held (bid churn)"
+msgstr "bidding held (bid churn)"
+
+#: src/pages/Config.tsx
+msgid "Bidding held after bid churn"
+msgstr "Bidding held after bid churn"
+
+#: src/pages/Status.tsx
+msgid "Bidding is on hold - bids kept being created and canceled again without delivering any hashrate."
+msgstr "Bidding is on hold - bids kept being created and canceled again without delivering any hashrate."
+
+#: src/pages/Status.tsx
+msgid "Bidding is on hold - the marketplace blacklisted your pool target. Bidding resumes automatically."
+msgstr "Bidding is on hold - the marketplace blacklisted your pool target. Bidding resumes automatically."
+
+#: src/lib/alertConditions.ts
+msgid "bidding resumed"
+msgstr "bidding resumed"
 
 #: src/pages/Status.tsx
 msgid "Bids"
@@ -947,6 +979,10 @@ msgstr "Bitcoin payout address"
 #: src/components/Bip110ScanCard.tsx
 msgid "bitcoind RPC is not configured on the daemon. Set BHA_BITCOIND_RPC_URL / _USER / _PASSWORD or fill the corresponding fields on the Config page."
 msgstr "bitcoind RPC is not configured on the daemon. Set BHA_BITCOIND_RPC_URL / _USER / _PASSWORD or fill the corresponding fields on the Config page."
+
+#: src/lib/alertConditions.ts
+msgid "blacklist expired"
+msgstr "blacklist expired"
 
 #: src/components/HashrateChart.tsx
 msgid "Block aged out of the rolling-{windowLabel} window - pool luck went from {luckBeforeText} to {luckAfterText}."
@@ -1994,9 +2030,18 @@ msgstr "Enable debug API endpoint"
 msgid "Enable every filter chip (all groups)"
 msgstr "Enable every filter chip (all groups)"
 
+#: src/components/AlertSpanDrawer.tsx
+#: src/components/AlertSpanTooltip.tsx
+msgid "Ended (estimated)"
+msgstr "Ended (estimated)"
+
 #: src/components/Bip110ScanCard.tsx
 msgid "Epoch"
 msgstr "Epoch"
+
+#: src/pages/Status.tsx
+msgid "Error:"
+msgstr "Error:"
 
 #: src/pages/Status.tsx
 msgid "Escalation in"
@@ -2748,6 +2793,10 @@ msgstr "marketplace API down"
 #: src/pages/Config.tsx
 msgid "Marketplace API has been unreachable for at least this many minutes."
 msgstr "Marketplace API has been unreachable for at least this many minutes."
+
+#: src/pages/Config.tsx
+msgid "Marketplace blacklisted your pool"
+msgstr "Marketplace blacklisted your pool"
 
 #: src/lib/alertConditions.ts
 msgid "marketplace empty"
@@ -3661,6 +3710,10 @@ msgstr "pool"
 msgid "Pool & Payout"
 msgstr "Pool & Payout"
 
+#: src/lib/alertConditions.ts
+msgid "pool blacklisted"
+msgstr "pool blacklisted"
+
 #: src/components/HashrateChart.tsx
 #: src/pages/Config.tsx
 #: src/pages/History.tsx
@@ -4082,6 +4135,10 @@ msgstr "Resolves to:"
 msgid "Restore the values that were on this page when you opened it."
 msgstr "Restore the values that were on this page when you opened it."
 
+#: src/pages/Status.tsx
+msgid "Resume bidding"
+msgstr "Resume bidding"
+
 #: src/pages/Config.tsx
 msgid "Resume last mode"
 msgstr "Resume last mode"
@@ -4089,6 +4146,18 @@ msgstr "Resume last mode"
 #: src/pages/History.tsx
 msgid "resumed"
 msgstr "resumed"
+
+#: src/pages/Status.tsx
+msgid "Resumes in {remainingFormatted}"
+msgstr "Resumes in {remainingFormatted}"
+
+#: src/pages/Status.tsx
+msgid "Resuming on the next tick"
+msgstr "Resuming on the next tick"
+
+#: src/pages/Status.tsx
+msgid "resuming…"
+msgstr "resuming…"
 
 #: src/pages/Config.tsx
 msgid "Retry interval"
@@ -4601,6 +4670,10 @@ msgid "The 55% miner-activation threshold has been crossed. BIP 110 will activat
 msgstr "The 55% miner-activation threshold has been crossed. BIP 110 will activate at the next difficulty epoch boundary."
 
 #: src/pages/Config.tsx
+msgid "The autopilot stopped placing new bids because the ones it placed were canceled by the marketplace again and again without ever delivering hashrate - usually your pool endpoint or the Bitcoin node behind it. Bidding stays held until you press Resume bidding on the Status page."
+msgstr "The autopilot stopped placing new bids because the ones it placed were canceled by the marketplace again and again without ever delivering hashrate - usually your pool endpoint or the Bitcoin node behind it. Bidding stays held until you press Resume bidding on the Status page."
+
+#: src/pages/Config.tsx
 msgid "The bid tracks the cheapest ask with enough depth for your target, plus a small premium. Two hard ceilings sit above that so the premium can never run away. Entered in <0/>/PH/day."
 msgstr "The bid tracks the cheapest ask with enough depth for your target, plus a small premium. Two hard ceilings sit above that so the premium can never run away. Entered in <0/>/PH/day."
 
@@ -4612,6 +4685,10 @@ msgstr "The BTC address Ocean TIDES credits payouts to. Editing this auto-update
 msgid "The chain Ocean's default endpoint mines. Stats come from Ocean's JSON API."
 msgstr "The chain Ocean's default endpoint mines. Stats come from Ocean's JSON API."
 
+#: src/pages/Status.tsx
+msgid "The daemon could not clear the hold."
+msgstr "The daemon could not clear the hold."
+
 #: src/pages/Setup.tsx
 msgid "The daemon may not be in setup mode. Reload the page or check the daemon logs."
 msgstr "The daemon may not be in setup mode. Reload the page or check the daemon logs."
@@ -4619,6 +4696,14 @@ msgstr "The daemon may not be in setup mode. Reload the page or check the daemon
 #: src/pages/Config.tsx
 msgid "The hostname being maintained. For No-IP DDNS Key groups (the modern auth flow that doesn't expose your account password), use the special hostname all.ddnskey.com - that updates every hostname assigned to the DDNS Key's group in one call. Test connection pushes a real update with the values currently in the form (without saving). `nochg` and `good` are both success."
 msgstr "The hostname being maintained. For No-IP DDNS Key groups (the modern auth flow that doesn't expose your account password), use the special hostname all.ddnskey.com - that updates every hostname assigned to the DDNS Key's group in one call. Test connection pushes a real update with the values currently in the form (without saving). `nochg` and `good` are both success."
+
+#: src/pages/Config.tsx
+msgid "The marketplace refuses bids pointing at your pool endpoint for a while, so the autopilot holds new bids until the blacklist expires and then resumes on its own. You can resume earlier from the Status page."
+msgstr "The marketplace refuses bids pointing at your pool endpoint for a while, so the autopilot holds new bids until the blacklist expires and then resumes on its own. You can resume earlier from the Status page."
+
+#: src/pages/Config.tsx
+msgid "The marketplace rejected every bid action the autopilot attempted on 3 ticks in a row. The alert carries the marketplace's own error text, so you can see whether it's a blacklist, a balance problem, or an auth failure. Clears as soon as one bid action goes through."
+msgstr "The marketplace rejected every bid action the autopilot attempted on 3 ticks in a row. The alert carries the marketplace's own error text, so you can see whether it's a blacklist, a balance problem, or an auth failure. Clears as soon as one bid action goes through."
 
 #: src/pages/Config.tsx
 msgid "The new password and its confirmation don't match."

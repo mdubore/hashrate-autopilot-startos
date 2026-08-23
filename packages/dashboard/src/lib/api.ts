@@ -63,6 +63,14 @@ export type NextActionDescriptor =
   | { kind: 'awaiting_hashprice' }
   | { kind: 'no_market_supply' }
   | {
+      /** #373: CREATE hold - churn breaker (manual release) or marketplace blacklist (auto-release at until_ms). */
+      kind: 'create_hold';
+      hold_kind: 'churn' | 'blacklist';
+      until_ms: number | null;
+      detail: string;
+      since_ms: number;
+    }
+  | {
       kind: 'will_create_bid';
       run_mode: 'LIVE' | 'DRY_RUN';
       target_ph: number;
@@ -292,6 +300,8 @@ export interface AlertConditionSpanView {
   body: string;
   start_ms: number;
   end_ms: number | null;
+  /** #376: true when end_ms is an estimate (implicit close / bounded orphan), never a real recovery. */
+  end_estimated: boolean;
   /** #341: when the loud alert fired (opener.created_at). The gap from
    *  start_ms is the sustained threshold waited out before paging. */
   fired_at: number;
@@ -335,6 +345,12 @@ export interface ProposalView {
   allowed: boolean;
   gate_reason: string | null;
   executed: 'DRY_RUN' | 'EXECUTED' | 'BLOCKED' | 'FAILED';
+  /**
+   * #372: raw execution error from the marketplace when
+   * `executed === 'FAILED'`, null otherwise. Server data - rendered
+   * verbatim, never translated.
+   */
+  error: string | null;
 }
 
 export interface BalanceView {
@@ -866,6 +882,16 @@ export const api = {
       body: JSON.stringify({ run_mode }),
     }),
   tickNow: () => request<TickNowResponse>('/api/actions/tick-now', { method: 'POST' }),
+  /**
+   * #373: release the persisted CREATE hold (churn breaker or
+   * marketplace blacklist) so the next tick may place bids again.
+   * Allowed for both hold kinds - a blacklist hold expires on its own,
+   * but the operator stays sovereign over an early resume.
+   */
+  clearCreateHold: () =>
+    request<{ ok: boolean; error?: string }>('/api/actions/create-hold/clear', {
+      method: 'POST',
+    }),
   metrics: (range: ChartRange) =>
     request<{ points: MetricPoint[]; range: ChartRange | null }>(
       `/api/metrics?range=${encodeURIComponent(range)}`,

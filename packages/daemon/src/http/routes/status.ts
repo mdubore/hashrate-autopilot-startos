@@ -361,7 +361,12 @@ function summariseLastExecuted(
   return { summary, executed_at_ms: tickAt };
 }
 
-function toProposalView(g: GateOutcome, executionResult: ExecutionResult | undefined): ProposalView {
+/**
+ * Exported for tests (#372): the executed-error passthrough is the
+ * whole point of this mapping, so it gets a direct unit test rather
+ * than a full HTTP harness.
+ */
+export function toProposalView(g: GateOutcome, executionResult: ExecutionResult | undefined): ProposalView {
   const proposal = g.proposal;
   const summary = describeProposal(proposal);
   const reason = 'reason' in proposal ? proposal.reason : '';
@@ -372,6 +377,13 @@ function toProposalView(g: GateOutcome, executionResult: ExecutionResult | undef
     allowed: g.allowed,
     gate_reason: g.allowed ? null : g.reason,
     executed: executionResult?.outcome ?? 'DRY_RUN',
+    // #372: a bare orange FAILED badge told the operator nothing -
+    // the reason ("Target not allowed (blacklisted until ...)") was
+    // recorded in decisions.executed_json and only reachable via the
+    // decisions API. Carry it onto /api/status so the Status page can
+    // show it inline.
+    error:
+      executionResult?.outcome === 'FAILED' ? executionResult.error : null,
   };
 }
 
@@ -495,6 +507,30 @@ function describeNextAction(state: State, runMode: State['run_mode']): NextActio
   const targetLabel = cappedByCeiling
     ? `effective cap ${targetPH.toLocaleString('en-US')} sat/PH/day (desired fillable + overpay exceeds cap)`
     : `${targetPH.toLocaleString('en-US')} sat/PH/day (fillable + overpay)`;
+
+  // #373: an active CREATE hold replaces the will-create story - the
+  // autopilot is deliberately NOT going to place a bid. Only shown when
+  // a create would otherwise be next (no owned bids); with a live bid
+  // the normal maintain-story below still applies (holds never block
+  // edits/cancels).
+  if (state.owned_bids.length === 0 && state.create_hold) {
+    const h = state.create_hold;
+    return {
+      descriptor: {
+        kind: 'create_hold',
+        hold_kind: h.kind,
+        until_ms: h.until_ms,
+        detail: h.detail,
+        since_ms: h.since_ms,
+      },
+      summary:
+        h.kind === 'blacklist'
+          ? `Bidding on hold - the marketplace blacklisted the pool target; resumes automatically at ${h.until_ms ? new Date(h.until_ms).toISOString() : 'expiry'}.`
+          : 'Bidding on hold - repeated create/cancel churn detected; resume manually once the cause is fixed.',
+      detail: h.detail,
+      ...noEvent,
+    };
+  }
 
   if (state.owned_bids.length === 0) {
     const verb = runMode === 'LIVE' ? 'place' : 'log (dry-run)';

@@ -176,6 +176,48 @@ export const SAMPLE_BUILDERS: Record<
       is_recovery: false,
     };
   },
+  mutation_failed: (locale) => {
+    const c = getAlertCopy(locale);
+    return {
+      severity: 'IMPORTANT',
+      title: c.mutation_failed_title(),
+      body: c.mutation_failed_body({
+        ticks: 3,
+        kind: 'CREATE_BID',
+        // Verbatim shape of a real Braiins rejection - untranslated on
+        // purpose, exactly as the live alert would carry it.
+        error:
+          'Braiins API POST /spot/bid returned 400 - Target not allowed (blacklisted until 2026-08-22T19:01:40 UTC)',
+      }),
+      is_recovery: false,
+    };
+  },
+  bid_churn_hold: (locale) => {
+    const c = getAlertCopy(locale);
+    return {
+      severity: 'IMPORTANT',
+      title: c.bid_churn_hold_title(),
+      // Shape of a real churn detail line - daemon data, untranslated
+      // on purpose, exactly as the live alert would carry it.
+      body: c.bid_churn_hold_body({
+        detail: '3 bids were created and canceled by the marketplace within 15 minutes with no hashrate delivered.',
+      }),
+      is_recovery: false,
+    };
+  },
+  target_blacklisted: (locale) => {
+    const c = getAlertCopy(locale);
+    return {
+      severity: 'IMPORTANT',
+      title: c.target_blacklisted_title(),
+      body: c.target_blacklisted_body({
+        until: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+        detail:
+          'Braiins API POST /spot/bid returned 400 - Target not allowed (blacklisted until 2026-08-22T19:01:40 UTC)',
+      }),
+      is_recovery: false,
+    };
+  },
   wallet_runway: (locale, fmt) => {
     const c = getAlertCopy(locale);
     return {

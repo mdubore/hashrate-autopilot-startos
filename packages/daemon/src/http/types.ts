@@ -48,6 +48,14 @@ export type NextActionDescriptor =
   | { kind: 'awaiting_hashprice' }
   | { kind: 'no_market_supply' }
   | {
+      /** #373: CREATE hold - churn breaker (manual release) or marketplace blacklist (auto-release at until_ms). */
+      kind: 'create_hold';
+      hold_kind: 'churn' | 'blacklist';
+      until_ms: number | null;
+      detail: string;
+      since_ms: number;
+    }
+  | {
       kind: 'will_create_bid';
       run_mode: 'LIVE' | 'DRY_RUN';
       target_ph: number;
@@ -255,6 +263,13 @@ export interface ProposalView {
   readonly allowed: boolean;
   readonly gate_reason: string | null;
   readonly executed: 'DRY_RUN' | 'EXECUTED' | 'BLOCKED' | 'FAILED';
+  /**
+   * #372: the raw execution error, verbatim from the marketplace API,
+   * when `executed === 'FAILED'`. Null for every other outcome. The
+   * dashboard renders it under the FAILED badge; it is server data and
+   * is deliberately NOT translated.
+   */
+  readonly error: string | null;
 }
 
 export interface DecisionSummary {

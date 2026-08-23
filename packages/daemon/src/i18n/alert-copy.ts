@@ -87,6 +87,23 @@ export interface AlertCopy {
   beta_exit_body(args: { fee_pct: string }): string;
   beta_exit_body_recovery(): string;
 
+  // #372: repeated bid-mutation execution failures. `error` is the raw
+  // marketplace API message and is passed through untranslated.
+  mutation_failed_title(): string;
+  mutation_failed_title_recovery(): string;
+  mutation_failed_body(args: { ticks: number; kind: string; error: string }): string;
+  mutation_failed_body_recovery(): string;
+
+  bid_churn_hold_title(): string;
+  bid_churn_hold_title_recovery(): string;
+  bid_churn_hold_body(args: { detail: string }): string;
+  bid_churn_hold_body_recovery(): string;
+
+  target_blacklisted_title(): string;
+  target_blacklisted_title_recovery(): string;
+  target_blacklisted_body(args: { until: string; detail: string }): string;
+  target_blacklisted_body_recovery(): string;
+
   wallet_runway_title(args: { runway_days: string; threshold_days: string }): string;
   wallet_runway_title_recovery(args: { runway_days: string; threshold_days: string }): string;
   wallet_runway_body(args: {
@@ -241,6 +258,27 @@ const EN: AlertCopy = {
   beta_exit_body_recovery: () =>
     `Active bids are back to fee_rate_pct = 0. Either Braiins reverted, or all fee-bearing bids settled.`,
 
+  mutation_failed_title: () => 'Bid actions keep failing',
+  mutation_failed_title_recovery: () => 'Bid actions working again',
+  mutation_failed_body: ({ ticks, kind, error }) =>
+    `The autopilot tried to change your bids on ${ticks} ticks in a row and the marketplace rejected every attempt. Nothing is being placed, repriced or cancelled until this clears. Last failure (${kind}): ${error}`,
+  mutation_failed_body_recovery: () =>
+    `A bid action went through - the marketplace is accepting changes again.`,
+
+  bid_churn_hold_title: () => 'Bidding held - bids kept getting canceled',
+  bid_churn_hold_title_recovery: () => 'Bidding resumed',
+  bid_churn_hold_body: ({ detail }) =>
+    `The autopilot stopped placing new bids to protect your account: ${detail} Fix the cause (usually your pool endpoint or the Bitcoin node behind it), then press Resume bidding on the dashboard.`,
+  bid_churn_hold_body_recovery: () =>
+    `You resumed bidding - the autopilot will place new bids again on the next opportunity.`,
+
+  target_blacklisted_title: () => 'Marketplace blacklisted your pool - bidding on hold',
+  target_blacklisted_title_recovery: () => 'Blacklist expired - bidding resumed',
+  target_blacklisted_body: ({ until, detail }) =>
+    `The marketplace temporarily refuses bids pointing at your pool endpoint. The autopilot holds all new bids until ${until} and resumes automatically. Detail: ${detail}`,
+  target_blacklisted_body_recovery: () =>
+    `The marketplace blacklist on your pool endpoint has expired - the autopilot is placing bids again.`,
+
   wallet_runway_title: ({ runway_days, threshold_days }) =>
     `Wallet runway ${runway_days} days (below ${threshold_days} day threshold)`,
   wallet_runway_title_recovery: ({ runway_days, threshold_days }) =>
@@ -370,6 +408,27 @@ const NL: AlertCopy = {
     `Braiins rekent nu een fee op minstens één actieve bid (fee_rate_pct: ${fee_pct}%). De marketplace lijkt uit beta te zijn - herevalueer het kostenmodel en de gedocumenteerde beta-exit-stappen.`,
   beta_exit_body_recovery: () =>
     `Actieve bids zijn weer terug op fee_rate_pct = 0. Of Braiins heeft het teruggedraaid, of alle fee-bearing bids zijn afgerekend.`,
+
+  mutation_failed_title: () => 'Bid-acties blijven mislukken',
+  mutation_failed_title_recovery: () => 'Bid-acties werken weer',
+  mutation_failed_body: ({ ticks, kind, error }) =>
+    `De autopilot heeft ${ticks} ticks achter elkaar geprobeerd je bids aan te passen en de marktplaats heeft elke poging geweigerd. Er wordt niets geplaatst, geherprijsd of geannuleerd tot dit is opgelost. Laatste fout (${kind}): ${error}`,
+  mutation_failed_body_recovery: () =>
+    `Een bid-actie is gelukt - de marktplaats accepteert weer wijzigingen.`,
+
+  bid_churn_hold_title: () => 'Bieden gepauzeerd - bids werden steeds geannuleerd',
+  bid_churn_hold_title_recovery: () => 'Bieden hervat',
+  bid_churn_hold_body: ({ detail }) =>
+    `De autopilot plaatst geen nieuwe bids meer om je account te beschermen: ${detail} Los de oorzaak op (meestal je pool-endpoint of de Bitcoin-node erachter) en druk daarna op Bieden hervatten op het dashboard.`,
+  bid_churn_hold_body_recovery: () =>
+    `Je hebt het bieden hervat - de autopilot plaatst bij de eerstvolgende gelegenheid weer nieuwe bids.`,
+
+  target_blacklisted_title: () => 'Marktplaats heeft je pool op de zwarte lijst gezet - bieden gepauzeerd',
+  target_blacklisted_title_recovery: () => 'Zwarte lijst verlopen - bieden hervat',
+  target_blacklisted_body: ({ until, detail }) =>
+    `De marktplaats weigert tijdelijk bids die naar je pool-endpoint wijzen. De autopilot houdt alle nieuwe bids tegen tot ${until} en hervat daarna automatisch. Detail: ${detail}`,
+  target_blacklisted_body_recovery: () =>
+    `De zwarte lijst van de marktplaats voor je pool-endpoint is verlopen - de autopilot plaatst weer bids.`,
 
   wallet_runway_title: ({ runway_days, threshold_days }) =>
     `Wallet runway ${runway_days} dagen (onder de ${threshold_days}-dagen drempel)`,
@@ -501,6 +560,27 @@ const ES: AlertCopy = {
     `Braiins está cobrando una comisión no nula en al menos una oferta activa (fee_rate_pct: ${fee_pct}%). El marketplace parece haber salido de beta - reevalúa el modelo de costes y considera los pasos documentados.`,
   beta_exit_body_recovery: () =>
     `Las ofertas activas vuelven a fee_rate_pct = 0. O bien Braiins lo revirtió, o todas las ofertas con comisión se liquidaron.`,
+
+  mutation_failed_title: () => 'Las acciones sobre ofertas siguen fallando',
+  mutation_failed_title_recovery: () => 'Las acciones sobre ofertas funcionan de nuevo',
+  mutation_failed_body: ({ ticks, kind, error }) =>
+    `El autopilot intentó cambiar tus ofertas en ${ticks} ticks seguidos y el marketplace rechazó todos los intentos. No se está creando, reajustando ni cancelando nada hasta que esto se resuelva. Último fallo (${kind}): ${error}`,
+  mutation_failed_body_recovery: () =>
+    `Una acción sobre una oferta se completó - el marketplace vuelve a aceptar cambios.`,
+
+  bid_churn_hold_title: () => 'Ofertas en pausa - las ofertas se cancelaban una y otra vez',
+  bid_churn_hold_title_recovery: () => 'Ofertas reanudadas',
+  bid_churn_hold_body: ({ detail }) =>
+    `El autopilot dejó de crear ofertas nuevas para proteger tu cuenta: ${detail} Corrige la causa (normalmente tu endpoint de pool o el nodo Bitcoin detrás de él) y luego pulsa Reanudar ofertas en el panel.`,
+  bid_churn_hold_body_recovery: () =>
+    `Reanudaste las ofertas - el autopilot volverá a crear ofertas en la próxima oportunidad.`,
+
+  target_blacklisted_title: () => 'El marketplace puso tu pool en lista negra - ofertas en pausa',
+  target_blacklisted_title_recovery: () => 'Lista negra expirada - ofertas reanudadas',
+  target_blacklisted_body: ({ until, detail }) =>
+    `El marketplace rechaza temporalmente las ofertas que apuntan a tu endpoint de pool. El autopilot retiene todas las ofertas nuevas hasta ${until} y se reanuda automáticamente. Detalle: ${detail}`,
+  target_blacklisted_body_recovery: () =>
+    `La lista negra del marketplace sobre tu endpoint de pool expiró - el autopilot vuelve a crear ofertas.`,
 
   wallet_runway_title: ({ runway_days, threshold_days }) =>
     `Autonomía de wallet ${runway_days} días (por debajo del umbral de ${threshold_days} días)`,
