@@ -55,5 +55,6 @@ One thing to decide before you restore: **a backup taken while it was LIVE comes
 
 ## Limitations
 
+- **The upstream project is in maintenance mode.** Existing behavior remains available, but upstream no longer has a SHA-256 feature roadmap and future bug-fix support may be limited. Read the project-status notice in the linked upstream README before relying on future feature work.
 - **Uninstalling deletes everything**, including your Braiins token and the whole history. Back up first if you want any of it.
 - **Public Stratum ingress is yours to arrange.** This service does not open a port, forward one, or manage a hostname for you.

@@ -2257,9 +2257,9 @@ function renderNextActionDetail(
     case 'paused':
     case 'braiins_unreachable':
     case 'no_market_supply':
-    // #373: CreateHoldPanel (rendered by the summary branch) already
-    // carries its own explanation line, so no second detail row.
     case 'create_hold':
+      // #373: CreateHoldPanel (rendered by the summary branch) already
+      // carries its own explanation line, so no second detail row.
       return null;
     case 'unknown_bids':
       return <Trans>IDs: {d.ids.join(', ')}</Trans>;

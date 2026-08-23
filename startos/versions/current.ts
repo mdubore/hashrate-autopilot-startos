@@ -1,21 +1,56 @@
-import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
+import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk';
 
 export const current = VersionInfo.of({
-  version: '1.18.0:0',
+  version: '1.18.2:0',
   releaseNotes: {
-    en_US:
-      "Updates Hashrate Autopilot to upstream 1.18.0. You can now declare which Ocean chain you mine on, under Config → Pool & Payout. Mainstream is the default and behaves exactly as before. If you point your miners at Ocean's BIP110 endpoint, choose BIP110: Ocean publishes no API for that chain, so instead of reporting zeros the dashboard says plainly what it cannot show, derives collected Profit & Loss from the on-chain payouts your own Bitcoin node sees, and disables the hashprice-based price cap and cheap mode, since no hashprice exists there — your fixed Maximum bid becomes the only ceiling. Bidding continues on either chain. Switching takes effect within a minute and needs no restart, and database migrations run automatically on first start.",
-    es_ES:
-      'Actualiza Hashrate Autopilot a la versión 1.18.0. Ahora puedes indicar en qué cadena de Ocean minas, en Configuración → Pool y pagos. Mainstream es la opción predeterminada y se comporta igual que antes. Si diriges tus mineros al endpoint BIP110 de Ocean, elige BIP110: Ocean no publica ninguna API para esa cadena, así que en lugar de mostrar ceros el panel indica con claridad lo que no puede mostrar, obtiene las ganancias cobradas a partir de los pagos en cadena que ve tu propio nodo de Bitcoin, y desactiva el límite de precio basado en el hashprice y el modo económico, porque allí no existe hashprice: tu puja máxima fija pasa a ser el único techo. La puja continúa en ambas cadenas. El cambio surte efecto en menos de un minuto y no requiere reiniciar, y las migraciones de la base de datos se ejecutan automáticamente al primer arranque.',
-    de_DE:
-      'Aktualisiert Hashrate Autopilot auf Upstream 1.18.0. Sie können jetzt unter Konfiguration → Pool und Auszahlung angeben, auf welcher Ocean-Chain Sie mining betreiben. Mainstream ist die Voreinstellung und verhält sich unverändert. Wenn Sie Ihre Miner auf Oceans BIP110-Endpunkt richten, wählen Sie BIP110: Ocean veröffentlicht für diese Chain keine API, daher zeigt das Dashboard statt Nullwerten klar an, was es nicht darstellen kann, leitet die vereinnahmten Gewinne aus den On-Chain-Auszahlungen ab, die Ihr eigener Bitcoin-Knoten sieht, und deaktiviert die hashpreisbasierte Preisobergrenze sowie den Sparmodus, da es dort keinen Hashpreis gibt — Ihr fest eingestelltes Maximalgebot ist dann die einzige Obergrenze. Das Bieten läuft auf beiden Chains weiter. Ein Wechsel wirkt innerhalb einer Minute und erfordert keinen Neustart; Datenbank-Migrationen laufen beim ersten Start automatisch.',
-    pl_PL:
-      'Aktualizuje Hashrate Autopilot do wersji 1.18.0. Możesz teraz wskazać, na którym łańcuchu Ocean kopiesz, w Konfiguracja → Pool i wypłaty. Mainstream jest ustawieniem domyślnym i działa tak jak dotychczas. Jeśli kierujesz koparki na endpoint BIP110 Ocean, wybierz BIP110: Ocean nie udostępnia API dla tego łańcucha, więc zamiast pokazywać zera panel wprost informuje, czego nie może przedstawić, wylicza zainkasowane zyski z płatności on-chain widzianych przez Twój własny węzeł Bitcoin i wyłącza limit ceny oparty na hashprice oraz tryb oszczędny, ponieważ hashprice tam nie istnieje — jedynym pułapem pozostaje Twoja stała oferta maksymalna. Licytacja działa dalej na obu łańcuchach. Zmiana zaczyna obowiązywać w ciągu minuty i nie wymaga restartu, a migracje bazy danych wykonują się automatycznie przy pierwszym uruchomieniu.',
-    fr_FR:
-      "Met Hashrate Autopilot à jour vers la version 1.18.0. Vous pouvez désormais indiquer sur quelle chaîne Ocean vous minez, dans Configuration → Pool et paiements. Mainstream est la valeur par défaut et se comporte comme avant. Si vous dirigez vos mineurs vers le point d'accès BIP110 d'Ocean, choisissez BIP110 : Ocean ne publie aucune API pour cette chaîne, donc au lieu d'afficher des zéros le tableau de bord indique clairement ce qu'il ne peut pas montrer, déduit les gains encaissés des paiements on-chain que voit votre propre nœud Bitcoin, et désactive le plafond de prix fondé sur le hashprice ainsi que le mode économique, puisqu'aucun hashprice n'existe là-bas : votre enchère maximale fixe devient le seul plafond. Les enchères se poursuivent sur les deux chaînes. Le changement prend effet en moins d'une minute et ne nécessite aucun redémarrage, et les migrations de base de données s'exécutent automatiquement au premier démarrage.",
+    en_US: `Updates Hashrate Autopilot to upstream 1.18.2.
+
+- Protects and automatically restores unpaid-earnings history that older releases could erase after a genuine balance exceeded 1.5 million sats.
+- Shows the marketplace's reason for failed create, edit, and cancel actions and adds account-protection holds for repeated non-delivering bids, active marketplace blacklists, and a Bitcoin node that stays unreachable for 30 minutes. Node-down protection cancels active bids before holding new ones.
+- Marks hold and failure periods truthfully on charts and the Timeline, and no longer labels estimated alert endings as recoveries.
+
+The upstream application runs migration 0124 automatically. There are no new settings. Upstream is now in maintenance mode, so read its project notice before relying on future feature work.
+
+[v1.18.1 recovery notes](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.1) · [v1.18.2 release notes](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.2)`,
+    es_ES: `Actualiza Hashrate Autopilot a la versión upstream 1.18.2.
+
+- Protege y restaura automáticamente el historial de ganancias pendientes que las versiones anteriores podían borrar cuando un saldo real superaba 1,5 millones de sats.
+- Muestra el motivo del marketplace para las acciones fallidas de crear, editar y cancelar, y añade pausas de protección de la cuenta ante pujas repetidas que no entregan hashrate, listas negras activas del marketplace y un nodo de Bitcoin que permanece inaccesible durante 30 minutos. La protección por caída del nodo cancela las pujas activas antes de bloquear nuevas pujas.
+- Marca con claridad los periodos de pausa y fallo en los gráficos y en la cronología, y deja de presentar como recuperaciones los finales estimados de las alertas.
+
+La aplicación upstream ejecuta automáticamente la migración 0124. No hay ajustes nuevos. El proyecto upstream está ahora en modo de mantenimiento; lee su aviso antes de depender de futuras funciones.
+
+[Notas de recuperación de v1.18.1](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.1) · [Notas de la versión v1.18.2](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.2)`,
+    de_DE: `Aktualisiert Hashrate Autopilot auf Upstream 1.18.2.
+
+- Schützt und rekonstruiert automatisch den Verlauf ausstehender Erträge, den ältere Versionen löschen konnten, wenn ein echter Saldo 1,5 Millionen Sats überstieg.
+- Zeigt den Grund des Marktplatzes für fehlgeschlagene Erstell-, Bearbeitungs- und Abbruchaktionen und fügt Kontoschutz-Sperren für wiederholte Gebote ohne Hashrate-Lieferung, aktive Marktplatz-Blacklists und einen 30 Minuten lang nicht erreichbaren Bitcoin-Knoten hinzu. Der Knotenausfallschutz bricht aktive Gebote ab, bevor neue Gebote gesperrt werden.
+- Kennzeichnet Sperr- und Fehlerzeiträume in Diagrammen und Timeline wahrheitsgemäß und bezeichnet geschätzte Alert-Enden nicht mehr als Wiederherstellungen.
+
+Die Upstream-Anwendung führt Migration 0124 automatisch aus. Es gibt keine neuen Einstellungen. Das Upstream-Projekt befindet sich jetzt im Wartungsmodus; lesen Sie den Projekthinweis, bevor Sie auf zukünftige Funktionen bauen.
+
+[Wiederherstellungshinweise zu v1.18.1](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.1) · [Versionshinweise zu v1.18.2](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.2)`,
+    pl_PL: `Aktualizuje Hashrate Autopilot do wersji upstream 1.18.2.
+
+- Chroni i automatycznie odtwarza historię niewypłaconych zarobków, którą starsze wersje mogły usunąć, gdy rzeczywiste saldo przekroczyło 1,5 miliona satów.
+- Pokazuje powód odrzucenia przez marketplace nieudanych operacji tworzenia, edycji i anulowania oraz dodaje blokady chroniące konto przy powtarzających się ofertach bez dostarczania hashrate'u, aktywnej czarnej liście marketplace i niedostępnym przez 30 minut węźle Bitcoin. Ochrona przy awarii węzła anuluje aktywne oferty przed wstrzymaniem nowych.
+- Rzetelnie oznacza okresy blokad i błędów na wykresach i osi czasu oraz nie opisuje już szacowanych zakończeń alertów jako odzyskania sprawności.
+
+Aplikacja upstream automatycznie uruchamia migrację 0124. Nie ma nowych ustawień. Projekt upstream jest teraz w trybie utrzymania; przed planowaniem przyszłych funkcji przeczytaj jego komunikat.
+
+[Informacje o odzyskiwaniu w v1.18.1](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.1) · [Informacje o wydaniu v1.18.2](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.2)`,
+    fr_FR: `Met Hashrate Autopilot à jour vers la version upstream 1.18.2.
+
+- Protège et restaure automatiquement l'historique des gains impayés que les anciennes versions pouvaient effacer lorsqu'un solde réel dépassait 1,5 million de sats.
+- Affiche la raison donnée par la place de marché pour les actions de création, de modification et d'annulation qui échouent, et ajoute des blocages de protection du compte en cas d'enchères répétées sans livraison de hashrate, de liste noire active de la place de marché ou de nœud Bitcoin inaccessible pendant 30 minutes. La protection contre la panne du nœud annule les enchères actives avant de bloquer les nouvelles.
+- Signale fidèlement les périodes de blocage et d'échec dans les graphiques et la chronologie, et ne présente plus les fins estimées d'alertes comme des rétablissements.
+
+L'application upstream exécute automatiquement la migration 0124. Il n'y a aucun nouveau réglage. Le projet upstream est désormais en mode maintenance ; lisez son avis avant de compter sur de futures fonctionnalités.
+
+[Notes de récupération v1.18.1](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.1) · [Notes de version v1.18.2](https://github.com/rdouma/hashrate-autopilot/releases/tag/v1.18.2)`,
   },
   migrations: {
     up: async () => {},
     down: IMPOSSIBLE,
   },
-})
+});
