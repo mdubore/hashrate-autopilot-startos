@@ -53,6 +53,12 @@ A restore brings back everything: your settings, your Braiins token, and the ful
 
 One thing to decide before you restore: **a backup taken while it was LIVE comes back LIVE**, and starts bidding again as soon as its dependencies are healthy.
 
+### Advanced unpaid-history recovery
+
+Version 1.18.1 added a one-time recovery path for unpaid-history gaps that the automatic repair cannot fully reconstruct. It requires a StartOS administrator to place an `ocean-unpaid-import.json` file beside the service database, then restart the service. The file must contain `[[tick_at_ms, unpaid_sat], ...]`; the daemon only fills missing exact timestamp matches and renames a successful import to `.imported`.
+
+There is no dashboard upload for this advanced recovery. Ask your package maintainer or StartOS administrator to follow the procedure in the package README, keep an independent backup, and verify the recovered chart before removing the source export. A malformed import is left in place and explained in the service log.
+
 ## Limitations
 
 - **The upstream project is in maintenance mode.** Existing behavior remains available, but upstream no longer has a SHA-256 feature roadmap and future bug-fix support may be limited. Read the project-status notice in the linked upstream README before relying on future feature work.

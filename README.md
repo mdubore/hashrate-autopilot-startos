@@ -52,17 +52,21 @@ One image, built here from source rather than pulled, in one subcontainer.
 
 ## Volume and Data Layout
 
-One volume, holding a single SQLite database that is the entire state of the service.
+One volume, holding the SQLite database and any one-time unpaid-history recovery import supplied by an administrator.
 
 | Volume | Mount Point | Purpose                                    |
 | ------ | ----------- | ------------------------------------------ |
-| `main` | `/app/data` | `state.db` — configuration, secrets, history |
+| `main` | `/app/data` | Database state and optional recovery import |
 
-| Path                | Written by | Holds                                                                   |
-| ------------------- | ---------- | ----------------------------------------------------------------------- |
-| `/app/data/state.db` | The daemon | Operator configuration, encrypted application secrets, runtime state, decision and payout history |
+| Path                                  | Written by                  | Holds                                                                   |
+| ------------------------------------- | --------------------------- | ----------------------------------------------------------------------- |
+| `/app/data/state.db`                  | The daemon                  | Operator configuration, encrypted application secrets, runtime state, decision and payout history |
+| `/app/data/ocean-unpaid-import.json`  | Administrator, when needed  | Optional `[[tick_at_ms, unpaid_sat], ...]` recovery data for unpaid-history gaps |
+| `/app/data/ocean-unpaid-import.imported` | The daemon               | The consumed import, renamed after a successful one-time merge          |
 
 Everything else in the container belongs to the image and is replaced on update. Bitcoin's data directory is also mounted, read-only, at `/mnt/bitcoin` — see [Dependencies](#dependencies).
+
+The recovery import is not part of ordinary operation. On the next start, the daemon merges exact timestamp matches only into unpaid-history rows whose value is missing, never overwrites a live reading, and renames a valid file to `.imported`. A malformed file stays in place and is reported in the service log.
 
 The secrets in that database — the Braiins access token, the dashboard password, Telegram credentials — are encrypted at rest by the application, not by this package. Uninstalling deletes the volume and everything above with it.
 
@@ -156,11 +160,26 @@ Understand what it does **not** cover: a listening dashboard says nothing about 
 
 ## Backups and Restore
 
-The whole `main` volume is copied wholesale — `sdk.Backups.ofVolumes('main')` — which in practice means the one SQLite database. Nothing is excluded.
+The whole `main` volume is copied wholesale — `sdk.Backups.ofVolumes('main')`. This includes `state.db` and any pending or consumed unpaid-history recovery import. Nothing is excluded.
 
 A restored instance is fully configured: the Braiins token, dashboard password, limits, pool destination and the whole decision and payout history come back with it. Dependency addresses do not need to, since they are resolved fresh on every start, so a restore onto a server whose Bitcoin, Electrs or Datum sit on different ports needs no intervention.
 
 The one thing to decide before restoring is the run mode you want. A backup taken while the controller was LIVE restores as LIVE, and the controller resumes bidding as soon as its dependencies are healthy.
+
+### Advanced unpaid-history recovery
+
+Upstream v1.18.1 can recover unpaid-history samples from an operator-supplied JSON export when the automatic decision-log recovery cannot cover the whole affected period. This requires StartOS administrator access; it is not a dashboard upload.
+
+Validate that the local file contains an array of `[tick_at_ms, unpaid_sat]` pairs, then copy it into the running service:
+
+```bash
+start-cli package attach hashrate-autopilot \
+  -n hashrate-autopilot-sub -- \
+  sh -c 'cat > /app/data/ocean-unpaid-import.json' \
+  < ocean-unpaid-import.json
+```
+
+Restart Hashrate Autopilot once. A successful import is renamed to `/app/data/ocean-unpaid-import.imported`; an invalid file remains at its original path and the service log explains why. The merge only fills missing values at exact timestamps. Keep an independent backup until the recovered chart and history are verified.
 
 ## Limitations and Differences
 
@@ -171,6 +190,7 @@ The one thing to decide before restoring is the run mode you want. A backup take
 5. **Uninstalling deletes everything**, including the encrypted secrets and the full history. Back up first.
 6. **x86_64 and aarch64 only.**
 7. **This package is a fork of the upstream application**, so what ships is the source in this repository rather than an upstream release artifact. It can therefore lag upstream; the packaged version is in the manifest.
+8. **The upstream project is in maintenance mode.** Existing behavior remains available, but upstream no longer has a SHA-256 feature roadmap and future bug-fix support may be limited. Read the project-status notice in the upstream README before relying on future feature work.
 
 ---
 
@@ -185,7 +205,7 @@ architectures:
 subcontainers:
   - hashrate-autopilot-sub # the only container
 volumes:
-  main: /app/data # state.db is the entire service state
+  main: /app/data # state.db plus an optional one-time unpaid-history recovery import
 file_models: []
 startos_managed_env_vars:
   - NODE_ENV
